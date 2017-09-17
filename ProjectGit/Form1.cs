@@ -15,9 +15,6 @@ namespace ProjectGit
         public Form1()
         {
             InitializeComponent();
-            
-
-            //еее, могём
         }
 
         private void Form1_Load(object sender, EventArgs e)
