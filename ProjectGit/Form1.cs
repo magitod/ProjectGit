@@ -15,6 +15,9 @@ namespace ProjectGit
         public Form1()
         {
             InitializeComponent();
+            
+
+            еее, могём
         }
     }
 }
