@@ -18,7 +18,7 @@ namespace ProjectGit
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new ApplicationContext()
             {
-                MainForm = new Form1()
+                MainForm = new Main()
             });
         }
     }
