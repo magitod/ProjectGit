@@ -8,6 +8,10 @@ namespace ProjectGit
 {
     class Neuron : INeuron
     {
+        public Neuron()
+        {
+
+        }
         public Neuron(double[] weihgts, IList<INeuron> childs, IList<INeuron> parents)
         {
             Weights = weihgts;
@@ -31,7 +35,10 @@ namespace ProjectGit
     
         public double activate(double[] inputVector)
         {
-            throw new NotImplementedException();
+            double z = inputVector[0];
+            double f = ActivationFunction.compute(z);
+            LastState = f;
+            return LastState;
         }
 
         public double computeSum(double[] inputVector)
@@ -41,7 +48,8 @@ namespace ProjectGit
             {
                 sum += Weights[i] * inputVector[i];
             }
-            return sum;
+            LastSum = sum;
+            return LastSum;
         }
     }
 }

@@ -10,11 +10,16 @@ namespace ProjectGit
     {
         ILayer[] layers_;
 
-        public ILayer[] Layers { get { return layers_; } }
+        public ILayer[] Layers { get; set; }
 
         public double[] computeOutput(double[] inputVector)
         {
-            throw new NotImplementedException();
+            double[] output = inputVector;
+            for(int i = 0; i < Layers.Length; i++)
+            {
+                output = Layers[i].compute(output);
+            }
+            return output;
         }
 
         public void train(IList<DataItem<double>> data)

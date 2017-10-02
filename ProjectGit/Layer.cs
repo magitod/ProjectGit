@@ -12,6 +12,11 @@ namespace ProjectGit
         double[] lastOutput_;
         INeuron[] neurons_;
 
+        public Layer(int inputDimension, INeuron[] neurons)
+        {
+            inputDimension_ = inputDimension;
+            neurons_ = neurons;
+        }
         public int InputDimension { get { return inputDimension_; } }
 
         public double[] LastOutput { get { return lastOutput_; } }
@@ -20,7 +25,17 @@ namespace ProjectGit
 
         public double[] compute(double[] inputVector)
         {
-            throw new NotImplementedException();
-        }
+            double[] output = new double[Neurons.Length];
+
+            for (int i = 0; i < Neurons.Length; i++)
+            {
+                double sum = Neurons[i].computeSum(inputVector);
+                output[i] = Neurons[i].activate(new double[] { sum });
+            }
+            
+            lastOutput_ = output;
+
+            return LastOutput;
+        }       
     }
 }

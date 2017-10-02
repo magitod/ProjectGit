@@ -12,7 +12,7 @@ namespace ProjectGit
         /// Weights of the neuron
         /// Веса нейронов
         /// </summary>
-        double[] Weights { get; }
+        double[] Weights { get; set; }
 
         /// <summary>
         /// Offset/bias of neuron (default is 0)
@@ -46,9 +46,9 @@ namespace ProjectGit
         /// </summary>
         double LastSum { get; set; }
 
-        IList<INeuron> Childs { get; }
+        IList<INeuron> Childs { get; set; }
 
-        IList<INeuron> Parents { get; }
+        IList<INeuron> Parents { get; set; }
 
         IFunction ActivationFunction { get; set; }
 

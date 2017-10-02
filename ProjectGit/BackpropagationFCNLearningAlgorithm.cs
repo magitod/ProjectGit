@@ -26,6 +26,12 @@ namespace ProjectGit
             return arr;
         }
 
+        public BackpropagationFCNLearningAlgorithm(LearningAlgorithmConfig config)
+        {
+            config_ = config;
+            random_ = new Random();
+        }
+
         public void train(IMultilayerNeuralNetwork network, IList<DataItem<double>> data)
         {
             if (config_.BatchSize < 1 || config_.BatchSize > data.Count)

@@ -10,7 +10,10 @@ namespace ProjectGit
     {
 
         private double alpha_ = 1.0;
+        internal SigmoidFunction()
+        {
 
+        }
         internal SigmoidFunction(double alpha)
         {
             alpha_ = alpha;
