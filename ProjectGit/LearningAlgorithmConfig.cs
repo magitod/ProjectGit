@@ -8,7 +8,6 @@ namespace ProjectGit
 {
     public class LearningAlgorithmConfig
     {
-
         public double LearningRate { get; set; }
 
         /// <summary>
