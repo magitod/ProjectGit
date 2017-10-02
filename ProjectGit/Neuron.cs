@@ -20,6 +20,11 @@ namespace ProjectGit
         double lastSum_;
         double dEdz_;
 
+        public Neuron()
+        {
+
+        }
+
         public IFunction ActivationFunction { get { return activationFunction_; } set { activationFunction_ = value; } }
 
         public double[] Weights { get { return weights_; } }
@@ -42,8 +47,13 @@ namespace ProjectGit
         }
 
         public double computeSum(double[] inputVector)
-        {
-            throw new NotImplementedException();
+        {          
+            double sum = Bias;
+            for(int i = 0; i < Weights.Length; i++)
+            {
+                sum += Weights[i] * inputVector[i];
+            }
+            return sum;
         }
     }
 }
