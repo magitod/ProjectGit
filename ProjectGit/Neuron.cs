@@ -8,27 +8,18 @@ namespace ProjectGit
 {
     class Neuron : INeuron
     {
-        double[] weights_ = null;
-
-        IList<INeuron> childs_ = null;
-        IList<INeuron> parents_ = null;
-
-        public Neuron(double[] weihgts, IList<INeuron> childs, IList<INeuron> parents)
-        {
-            weights_ = weihgts;
-            childs_ = childs;
-            parents_ = parents;
-        }
 
         public IFunction ActivationFunction { get; set; }
 
-        public double[] Weights { get { return weights_; } }
+        public IList<INeuron> Childs { get; }
+
+        public IList<INeuron> Parents { get; }
+
+
+
+        public double[] Weights { get; }
 
         public double Bias { get; set; }
-
-        public IList<INeuron> Childs { get { return childs_; } }
-
-        public IList<INeuron> Parents { get { return parents_; } }
 
         public double dEdz { get; set; }
 
@@ -36,10 +27,21 @@ namespace ProjectGit
 
         public double LastSum { get; set; }
 
+
+
+        public Neuron(double[] weihgts, IList<INeuron> childs, IList<INeuron> parents)
+        {
+            Weights = weihgts;
+            Childs = childs;
+            Parents = parents;
+        }
+
+        
         public double activate(double[] inputVector)
         {
             throw new NotImplementedException();
         }
+
 
         public double computeSum(double[] inputVector)
         {          
