@@ -19,9 +19,9 @@ namespace ProjectGit
         public double Bias { get; set; }
         public IFunction ActivationFunction { get; set; }
 
-        public IList<INeuron> Childs { get; }
+        public IList<INeuron> Childs { get; set; }
 
-        public IList<INeuron> Parents { get; }
+        public IList<INeuron> Parents { get; set; }
 
         public double dEdz { get; set; }
 
