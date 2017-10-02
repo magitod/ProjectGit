@@ -57,6 +57,7 @@
     <Compile Include="IMultilayerNeuralNetwork.cs" />
     <Compile Include="INeuralNetwork.cs" />
     <Compile Include="INeuron.cs" />
+    <Compile Include="Layer.cs" />
     <Compile Include="LearningAlgorithmConfig.cs" />
     <Compile Include="Main.cs">
       <SubType>Form</SubType>
