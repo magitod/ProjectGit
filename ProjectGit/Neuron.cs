@@ -8,38 +8,33 @@ namespace ProjectGit
 {
     class Neuron : INeuron
     {
-        double[] weights_;
-        double bias_;
+        double[] weights_ = null;
 
-        IFunction activationFunction_;
+        IList<INeuron> childs_ = null;
+        IList<INeuron> parents_ = null;
 
-        IList<INeuron> childs_;
-        IList<INeuron> parents_;
-
-        double lastState_;
-        double lastSum_;
-        double dEdz_;
-
-        public Neuron()
+        public Neuron(double[] weihgts, IList<INeuron> childs, IList<INeuron> parents)
         {
-
+            weights_ = weihgts;
+            childs_ = childs;
+            parents_ = parents;
         }
 
-        public IFunction ActivationFunction { get { return activationFunction_; } set { activationFunction_ = value; } }
+        public IFunction ActivationFunction { get; set; }
 
         public double[] Weights { get { return weights_; } }
 
-        public double Bias { get { return bias_; } set { bias_ = value; } }
+        public double Bias { get; set; }
 
         public IList<INeuron> Childs { get { return childs_; } }
 
         public IList<INeuron> Parents { get { return parents_; } }
 
-        public double dEdz { get { return dEdz_; } set { dEdz_ = value; } }
+        public double dEdz { get; set; }
 
-        public double LastState { get { return lastState_; } set { lastState_ = value; } }
+        public double LastState { get; set; }
 
-        public double LastSum { get { return lastSum_; } set { lastSum_ = value; } }
+        public double LastSum { get; set; }
 
         public double activate(double[] inputVector)
         {
