@@ -8,8 +8,6 @@ namespace ProjectGit
 {
     class CoronarySclerosisNeuralNetwork : IMultilayerNeuralNetwork
     {
-        ILayer[] layers_;
-
         public ILayer[] Layers { get; set; }
 
         public double[] computeOutput(double[] inputVector)
