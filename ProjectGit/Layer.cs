@@ -8,31 +8,26 @@ namespace ProjectGit
 {
     class Layer : ILayer
     {
-        int inputDimension_;
         double[] lastOutput_;
-        INeuron[] neurons_;
 
         public Layer(int inputDimension, INeuron[] neurons)
         {
-            inputDimension_ = inputDimension;
-            neurons_ = neurons;
+            InputDimension = inputDimension;
+            Neurons = neurons;
         }
-        public int InputDimension { get { return inputDimension_; } }
+        public int InputDimension { get; }
 
         public double[] LastOutput { get { return lastOutput_; } }
 
-        public INeuron[] Neurons { get { return neurons_; } }
+        public INeuron[] Neurons { get; }
 
         public double[] compute(double[] inputVector)
         {
             double[] output = new double[Neurons.Length];
 
             for (int i = 0; i < Neurons.Length; i++)
-            {
-                double sum = Neurons[i].computeSum(inputVector);
-                output[i] = Neurons[i].activate(new double[] { sum });
-            }
-            
+                output[i] = Neurons[i].activate(inputVector);
+                       
             lastOutput_ = output;
 
             return LastOutput;

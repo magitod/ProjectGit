@@ -13,11 +13,11 @@ using System.Reflection;
 namespace ProjectGit
 {
     public partial class Main : Form
-    {
+    {       
         List<DataItem<double>> data_;
         DataItem<string> data_info_rus_;
         DataItem<string> data_info_eng_;
-        string[] result_info_ = new string[] { "P" };
+        string[] result_info_;
         DataTable table_train_selection_;
 
         CoronarySclerosisNeuralNetwork network_;
@@ -44,6 +44,7 @@ namespace ProjectGit
                                 new string[] { "Возраст", "Пол", "АГ", "АС" },
                                 new string[] { "КС" }
                             );
+            result_info_ = new string[] { "P" };
 
             //Чтение обучающей выборки
             data_ = readTrainSelection();

@@ -35,19 +35,18 @@ namespace ProjectGit
     
         public double activate(double[] inputVector)
         {
-            double z = inputVector[0];
-            double f = ActivationFunction.compute(z);
-            LastState = f;
+            double state = ActivationFunction.compute(computeSum(inputVector));
+            LastState = state;
             return LastState;
         }
 
         public double computeSum(double[] inputVector)
         {          
             double sum = Bias;
-            for(int i = 0; i < Weights.Length; i++)
-            {
+
+            for(int i = 0; i < Weights.Length; i++)            
                 sum += Weights[i] * inputVector[i];
-            }
+            
             LastSum = sum;
             return LastSum;
         }
