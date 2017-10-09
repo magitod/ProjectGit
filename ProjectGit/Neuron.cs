@@ -27,7 +27,7 @@ namespace ProjectGit
 
         public IList<INeuron> Parents { get; set; }
 
-        public double dEdz { get; set; }
+        public double LastError { get; set; }
 
         public double LastState { get; set; }
 

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ProjectGit
 {
-    internal class BackpropagationFCNLearningAlgorithm : ILearningStrategy<IMultilayerNeuralNetwork>
+    internal class BackpropagationFCNLearningAlgorithm : ILearningStrategy<IMultilayerNeuralNetwork, LearningAlgorithmResult>
     {
         LearningAlgorithmConfig config_ = null;
         private Random random_ = null;
@@ -31,186 +31,234 @@ namespace ProjectGit
             config_ = config;
             random_ = new Random();
         }
-
-        public void train(IMultilayerNeuralNetwork network, IList<DataItem<double>> data)
+        /// <summary>
+        /// Обучение нейронной сети по обучающей выборке
+        /// </summary>
+        /// <param name="network">Нейронная сеть</param>
+        /// <param name="data">Обучающая выборка</param>
+        /// <returns>Возвращает LeaningAlgorithmResult </returns>
+        public LearningAlgorithmResult train(IMultilayerNeuralNetwork network, IList<DataItem<double>> data)
         {
-            if (config_.BatchSize < 1 || config_.BatchSize > data.Count)
-            {
-                config_.BatchSize = data.Count;
-            }
             double currentError = Single.MaxValue;
             double lastError = 0;
             int epochNumber = 0;
-            //Logger.Instance.Log("Start learning...");
+            DateTime dtStart = DateTime.Now;
 
+            if (config_.BatchSize < 1 ||
+                config_.BatchSize > data.Count
+            ){
+                config_.BatchSize = data.Count;
+            }
 
-            do
-            {
+            do {
                 lastError = currentError;
-                DateTime dtStart = DateTime.Now;
+                #region -> Обработка пакетов
+
+                //index of dataitem
+                int currentIndex = 0;
 
                 //preparation for epoche
                 int[] trainingIndices = new int[data.Count];
                 for (int i = 0; i < data.Count; i++)
-                {
                     trainingIndices[i] = i;
-                }
+
                 if (config_.BatchSize > 0)
-                {
                     trainingIndices = shuffle(trainingIndices);
-                }
 
+                do {
+                    #region -> Инициализация аккумулированной ошибки весов (initialize accumulated Error for Weights, Biases)
 
-                int currentIndex = 0;
-                do
-                {
-                    #region initialize accumulated error for batch, for weights and biases
-
-                    double[][][] nablaWeights = new double[network.Layers.Length][][];
-                    double[][] nablaBiases = new double[network.Layers.Length][];
+                    double[][][] NablaWeights = new double[network.Layers.Length][][];
+                    double[][] NablaBiases = new double[network.Layers.Length][];
 
                     for (int i = 0; i < network.Layers.Length; i++)
                     {
-                        nablaBiases[i] = new double[network.Layers[i].Neurons.Length];
-                        nablaWeights[i] = new double[network.Layers[i].Neurons.Length][];
+                        NablaBiases[i] = new double[network.Layers[i].Neurons.Length];
+                        NablaWeights[i] = new double[network.Layers[i].Neurons.Length][];
+
                         for (int j = 0; j < network.Layers[i].Neurons.Length; j++)
                         {
-                            nablaBiases[i][j] = 0;
-                            nablaWeights[i][j] = new double[network.Layers[i].Neurons[j].Weights.Length];
+                            NablaBiases[i][j] = 0;
+                            NablaWeights[i][j] = new double[network.Layers[i].Neurons[j].Weights.Length];
+
                             for (int k = 0; k < network.Layers[i].Neurons[j].Weights.Length; k++)
-                            {
-                                nablaWeights[i][j][k] = 0;
-                            }
+                                NablaWeights[i][j][k] = 0;
+
                         }
                     }
 
                     #endregion
+                    #region -> Обработка одного пакета (process one batch)
 
-                    //process one batch
-                    for (int inBatchIndex = currentIndex; inBatchIndex < currentIndex + config_.BatchSize && inBatchIndex < data.Count; inBatchIndex++)
-                    {
-                        //forward pass
-                        double[] realOutput = network.computeOutput(data[trainingIndices[inBatchIndex]].Input);
+                    for (int i = currentIndex; 
+                         i < currentIndex + config_.BatchSize && 
+                         i < data.Count; 
+                         i++
+                    ){                        
+                        #region -> Прямое распространение сигналов (forward pass)
 
-                        //backward pass, error propagation
-                        //last layer
-                        //.......................................ОБРАБОТКА ПОСЛЕДНЕГО СЛОЯ
+                        double[] realOutput;
+                        realOutput = network.computeOutput(data[trainingIndices[i]].Input);
 
-                        for (int j = 0; j < network.Layers[network.Layers.Length - 1].Neurons.Length; j++)
+                        #endregion
+                        #region -> Обратное распространение ошибки (backward pass, error propagation)
+
+                        #region -> ОБРАБОТКА ПОСЛЕДНЕГО СЛОЯ (last layer)
+
+                        int _lastLayerIndex = network.Layers.Length - 1;
+                        for (int j = 0; j < network.Layers[_lastLayerIndex].Neurons.Length; j++)
                         {
-                            network.Layers[network.Layers.Length - 1].Neurons[j].dEdz =
-                                config_.ErrorFunction.calculatePartialDerivaitveByV2Index(data[inBatchIndex].Output, realOutput, j) *
-                                network.Layers[network.Layers.Length - 1].Neurons[j].ActivationFunction.computeFirstDerivative(network.Layers[network.Layers.Length - 1].Neurons[j].LastSum);
+                            #region -> Вычисление ошибки выходного нейрона
 
-                            nablaBiases[network.Layers.Length - 1][j] += 
-                                config_.LearningRate *
-                                network.Layers[network.Layers.Length - 1].Neurons[j].dEdz;
+                            network.Layers[_lastLayerIndex].Neurons[j].LastError =
+                                config_.ErrorFunction.calculatePartialDerivaitveByV2Index( data[i].Output, realOutput, j ) *
+                                network.Layers[_lastLayerIndex].Neurons[j].ActivationFunction.computeFirstDerivative(
+                                    network.Layers[_lastLayerIndex].Neurons[j].LastSum
+                                );
 
-                            for (int i = 0; i < network.Layers[network.Layers.Length - 1].Neurons[j].Weights.Length; i++)
+                            #endregion
+                            #region -> Вычисление градиентов весов нейрона
+
+                            NablaBiases[_lastLayerIndex][j] += 
+                                config_.LearningRate * 
+                                network.Layers[_lastLayerIndex].Neurons[j].LastError;
+
+                            for (int y = 0; y < network.Layers[_lastLayerIndex].Neurons[j].Weights.Length; y++)
                             {
-                                nablaWeights[network.Layers.Length - 1][j][i] +=
-                                    config_.LearningRate * 
-                                    (network.Layers[network.Layers.Length - 1].Neurons[j].dEdz *
-                                    (network.Layers.Length > 1 ? network.Layers[network.Layers.Length - 1 - 1].Neurons[i].LastState : data[inBatchIndex].Input[i]) +
-                                    config_.RegularizationFactor *
-                                    network.Layers[network.Layers.Length - 1].Neurons[j].Weights[i] / 
-                                    data.Count);
+                                NablaWeights[_lastLayerIndex][j][y] +=
+                                    config_.LearningRate *
+                                    (
+                                        network.Layers[_lastLayerIndex].Neurons[j].LastError *
+                                        ((network.Layers.Length > 1) ?
+                                            network.Layers[_lastLayerIndex - 1].Neurons[y].LastState :
+                                            data[i].Input[y]
+                                        ) +
+                                        config_.RegularizationFactor *
+                                        network.Layers[_lastLayerIndex].Neurons[j].Weights[y] /
+                                        data.Count
+                                    );
                             }
+
+                            #endregion
                         }
 
-                        //hidden layers
-                        //.......................................ОБРАБОТКА СКРЫТЫХ СЛОЕВ
+                        #endregion
+                        #region -> ОБРАБОТКА СКРЫТЫХ СЛОЕВ (hidden layers)
 
-                        for (int hiddenLayerIndex = network.Layers.Length - 2; hiddenLayerIndex >= 0; hiddenLayerIndex--)
-                        {
-                            for (int j = 0; j < network.Layers[hiddenLayerIndex].Neurons.Length; j++)
+                        for (int _hiddenLayerIndex = network.Layers.Length - 2; 
+                             _hiddenLayerIndex >= 0; 
+                             _hiddenLayerIndex--
+                        ){
+                            for (int j = 0; j < network.Layers[_hiddenLayerIndex].Neurons.Length; j++)
                             {
-                                network.Layers[hiddenLayerIndex].Neurons[j].dEdz = 0;
-                                for (int k = 0; k < network.Layers[hiddenLayerIndex + 1].Neurons.Length; k++)
-                                {
-                                    network.Layers[hiddenLayerIndex].Neurons[j].dEdz +=
-                                        network.Layers[hiddenLayerIndex + 1].Neurons[k].Weights[j] *
-                                        network.Layers[hiddenLayerIndex + 1].Neurons[k].dEdz;
-                                }
-                                network.Layers[hiddenLayerIndex].Neurons[j].dEdz *=
-                                    network.Layers[hiddenLayerIndex].Neurons[j].ActivationFunction.
-                                        computeFirstDerivative(
-                                            network.Layers[hiddenLayerIndex].Neurons[j].LastSum
-                                        );
+                                #region -> Вычисление ошибки сткрытого нейрона
 
-                                nablaBiases[hiddenLayerIndex][j] += config_.LearningRate *
-                                                                    network.Layers[hiddenLayerIndex].Neurons[j].dEdz;
+                                network.Layers[_hiddenLayerIndex].Neurons[j].LastError = 0;
+                                for (int k = 0; k < network.Layers[_hiddenLayerIndex + 1].Neurons.Length; k++)                              
+                                    network.Layers[_hiddenLayerIndex].Neurons[j].LastError +=
+                                        network.Layers[_hiddenLayerIndex + 1].Neurons[k].Weights[j] *
+                                        network.Layers[_hiddenLayerIndex + 1].Neurons[k].LastError;
+                                
+                                network.Layers[_hiddenLayerIndex].Neurons[j].LastError *=
+                                    network.Layers[_hiddenLayerIndex].Neurons[j].ActivationFunction.computeFirstDerivative(
+                                        network.Layers[_hiddenLayerIndex].Neurons[j].LastSum
+                                    );
 
-                                for (int i = 0; i < network.Layers[hiddenLayerIndex].Neurons[j].Weights.Length; i++)
+                                #endregion
+                                #region -> Вычисление градиентов весов нейрона
+
+                                NablaBiases[_hiddenLayerIndex][j] += 
+                                    config_.LearningRate *
+                                    network.Layers[_hiddenLayerIndex].Neurons[j].LastError;
+
+                                for (int y = 0; y < network.Layers[_hiddenLayerIndex].Neurons[j].Weights.Length; y++)
                                 {
-                                    nablaWeights[hiddenLayerIndex][j][i] += config_.LearningRate * (
-                                        network.Layers[hiddenLayerIndex].Neurons[j].dEdz *
-                                        (hiddenLayerIndex > 0 ? network.Layers[hiddenLayerIndex - 1].Neurons[i].LastState : data[inBatchIndex].Input[i])
-                                            +
-                                        config_.RegularizationFactor * network.Layers[hiddenLayerIndex].Neurons[j].Weights[i] / data.Count
+                                    NablaWeights[_hiddenLayerIndex][j][y] += 
+                                        config_.LearningRate * 
+                                        (
+                                            network.Layers[_hiddenLayerIndex].Neurons[j].LastError *
+                                            ( (_hiddenLayerIndex > 0) ? 
+                                                network.Layers[_hiddenLayerIndex - 1].Neurons[y].LastState : 
+                                                data[i].Input[y] 
+                                            ) +
+                                            config_.RegularizationFactor * 
+                                            network.Layers[_hiddenLayerIndex].Neurons[j].Weights[y] / 
+                                            data.Count
                                         );
                                 }
+
+                                #endregion
                             }
                         }
+                        #endregion
+
+                        #endregion
                     }
 
-                    //update weights and bias
+                    #endregion
+                    #region -> Обновление весов (update weights and bias of neurons)
+
                     for (int layerIndex = 0; layerIndex < network.Layers.Length; layerIndex++)
                     {
                         for (int neuronIndex = 0; neuronIndex < network.Layers[layerIndex].Neurons.Length; neuronIndex++)
                         {
-                            network.Layers[layerIndex].Neurons[neuronIndex].Bias -= nablaBiases[layerIndex][neuronIndex];
+                            network.Layers[layerIndex].Neurons[neuronIndex].Bias -= NablaBiases[layerIndex][neuronIndex];
+
                             for (int weightIndex = 0; weightIndex < network.Layers[layerIndex].Neurons[neuronIndex].Weights.Length; weightIndex++)
-                            {
-                                network.Layers[layerIndex].Neurons[neuronIndex].Weights[weightIndex] -=
-                                    nablaWeights[layerIndex][neuronIndex][weightIndex];
-                            }
+                                network.Layers[layerIndex].Neurons[neuronIndex].Weights[weightIndex] -= NablaWeights[layerIndex][neuronIndex][weightIndex];
                         }
                     }
 
+                    #endregion
                     currentIndex += config_.BatchSize;
                 } while (currentIndex < data.Count);
 
-                //recalculating error on all data
+                #endregion
+                #region -> Вычисление ошибки на всей выборке (recalculating error on all data)
+
                 //real error
                 currentError = 0;
+
                 for (int i = 0; i < data.Count; i++)
                 {
                     double[] realOutput = network.computeOutput(data[i].Input);
                     currentError += config_.ErrorFunction.calculate(data[i].Output, realOutput);
                 }
+
                 currentError *= 1d / data.Count;
+
+                #endregion
+                #region -> Регуляризация (regularization)
+
                 //regularization term
                 if (Math.Abs(config_.RegularizationFactor - 0d) > Double.Epsilon)
                 {
                     double reg = 0;
-                    for (int layerIndex = 0; layerIndex < network.Layers.Length; layerIndex++)
-                    {
-                        for (int neuronIndex = 0; neuronIndex < network.Layers[layerIndex].Neurons.Length; neuronIndex++)
-                        {
-                            for (int weightIndex = 0; weightIndex < network.Layers[layerIndex].Neurons[neuronIndex].Weights.Length; weightIndex++)
-                            {
+                    for (int layerIndex = 0; layerIndex < network.Layers.Length; layerIndex++)                 
+                        for (int neuronIndex = 0; neuronIndex < network.Layers[layerIndex].Neurons.Length; neuronIndex++)                       
+                            for (int weightIndex = 0; weightIndex < network.Layers[layerIndex].Neurons[neuronIndex].Weights.Length; weightIndex++)                           
                                 reg += network.Layers[layerIndex].Neurons[neuronIndex].Weights[weightIndex] *
                                         network.Layers[layerIndex].Neurons[neuronIndex].Weights[weightIndex];
-                            }
-                        }
-                    }
+                                                                      
                     currentError += config_.RegularizationFactor * reg / (2 * data.Count);
                 }
 
+                #endregion
                 epochNumber++;
-                //Logger.Instance.Log("Eposh #" + epochNumber.ToString() +
-                //                    " finished; current error is " + currentError.ToString() +
-                //                    "; it takes: " +
-                //                    (DateTime.Now - dtStart).Duration().ToString());
-
-
-
             } while (
                 epochNumber < config_.MaxEpoches &&
                 currentError > config_.MinError &&
                 Math.Abs(currentError - lastError) > config_.MinErrorChange
-              );
+            );
+            #region -> Инициализируем результат обучения
+
+            LearningAlgorithmResult result = new LearningAlgorithmResult();
+            result.Epoches = epochNumber;
+            result.Error = currentError;
+            result.Duration = Convert.ToDouble((DateTime.Now - dtStart).Duration().Milliseconds / 1000);
+
+            #endregion
+            return result;
         }
 
     }

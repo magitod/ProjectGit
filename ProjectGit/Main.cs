@@ -53,11 +53,11 @@ namespace ProjectGit
             table_train_selection_ = createTableTrainSelection();
 
             //Вывод данных таблицы
-            dataGridView1.DataSource = table_train_selection_;
+            dgv_train_selection.DataSource = table_train_selection_;
             for (int j = 0; j < data_info_eng_.Input.Length; j++)          
-                dataGridView1.Columns[data_info_eng_.Input[j]].HeaderText = data_info_rus_.Input[j];        
+                dgv_train_selection.Columns[data_info_eng_.Input[j]].HeaderText = data_info_rus_.Input[j];        
             for (int j = 0; j < data_info_eng_.Output.Length; j++)          
-                dataGridView1.Columns[data_info_eng_.Output[j]].HeaderText = data_info_rus_.Output[j];
+                dgv_train_selection.Columns[data_info_eng_.Output[j]].HeaderText = data_info_rus_.Output[j];
 
             //Настройка нейросети
             countNeuronsOfLayer = new int[] { 9, 2, data_info_eng_.Output.Length };
@@ -68,11 +68,12 @@ namespace ProjectGit
                 countWeightsOfNeuron[i + 1] = countNeuronsOfLayer[i];
             //Создание нейронной сети
             network_ = createNeuralNetwork();
+            //randomizeWeights();
 
             config_ = new LearningAlgorithmConfig();
             config_.ErrorFunction = new HalfSquaredEuclidianDistance();
             config_.LearningRate = 0.2;
-            config_.BatchSize = -1;
+            config_.BatchSize = 100;
             config_.MinError = 0.00000001;
             config_.MinErrorChange = 0.00000001;
             config_.MaxEpoches = 1000;
@@ -177,13 +178,7 @@ namespace ProjectGit
                 for (int j = 0; j < neurons.Length; j++)
                 {
                     neurons[j] = new Neuron();
-
-                    double[] weights = new double[countWeightsOfNeuron[i]];
-                    for (int k = 0; k < weights.Length; k++)
-                        weights[k] = random.NextDouble();
-
-                    neurons[j].Bias = random.NextDouble();
-                    neurons[j].Weights = weights;
+                    neurons[j].Weights = new double[countWeightsOfNeuron[i]];                    
                     neurons[j].ActivationFunction = function;
                 }
 
@@ -193,20 +188,6 @@ namespace ProjectGit
             network.Layers = layers;
 
             return network;
-        }
-        void reloadWeightsOfNeurons( IMultilayerNeuralNetwork network)
-        {
-            Random random = new Random();
-            for (int i = 0; i < network.Layers.Length; i++)
-            {
-                for (int j = 0; j < network.Layers[i].Neurons.Length; j++)
-                {
-                    double[] weights = new double[network.Layers[i].Neurons[j].Weights.Length];
-                    for (int k = 0; k < weights.Length; k++)
-                        weights[k] = random.NextDouble();
-                    network.Layers[i].Neurons[j].Weights = weights;
-                }
-            }
         }
         public DataTable createTableWeightsOfLayer(ILayer layer)
         {
@@ -254,11 +235,21 @@ namespace ProjectGit
             }
         }
 
+        void randomizeWeights()
+        {
+            network_.randomize(-1.0 / (2.0 * data_info_eng_.Input.Length), 1.0 / (2.0 * data_info_eng_.Input.Length));
+            updateData();
+        }
+
         private void btn_train_Click(object sender, EventArgs e)
         {
-            reloadWeightsOfNeurons(network_);
             algorithm_.train(network_, data_);
             updateData();
+        }
+
+        private void btn_init_weights_Click(object sender, EventArgs e)
+        {
+            randomizeWeights();
         }
     }   
 }

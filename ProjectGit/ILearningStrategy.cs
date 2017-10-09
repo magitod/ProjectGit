@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ProjectGit
 {
-    public interface ILearningStrategy<T>
+    public interface ILearningStrategy<T, R>
     {
         /// <summary>
         /// Train neural network
@@ -15,6 +15,6 @@ namespace ProjectGit
         /// <param name="network">Neural network for training</param>
         /// <param name="inputs">Set of input vectors</param>
         /// <param name="outputs">Set of output vectors</param>
-        void train(T network, IList<DataItem<double>> data);
+        R train(T network, IList<DataItem<double>> data);
     }
 }
