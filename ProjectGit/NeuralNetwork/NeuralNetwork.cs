@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ProjectGit
 {
-    class CoronarySclerosisNeuralNetwork : IMultilayerNeuralNetwork
+    public class NeuralNetwork : IMultilayerNeuralNetwork
     {
         public ILayer[] Layers { get; set; }
 

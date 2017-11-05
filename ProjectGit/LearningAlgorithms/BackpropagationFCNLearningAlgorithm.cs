@@ -63,7 +63,7 @@ namespace ProjectGit
                     trainingIndices[i] = i;
 
                 if (config_.BatchSize > 0)
-                    trainingIndices = shuffle(trainingIndices);
+                    //trainingIndices = shuffle(trainingIndices);
 
                 do {
                     #region -> Инициализация аккумулированной ошибки весов (initialize accumulated Error for Weights, Biases)
@@ -94,11 +94,11 @@ namespace ProjectGit
                          i < currentIndex + config_.BatchSize && 
                          i < data.Count; 
                          i++
-                    ){                        
+                    ){
+                        double[] realOutput;
                         #region -> Прямое распространение сигналов (forward pass)
 
-                        double[] realOutput;
-                        realOutput = network.computeOutput(data[trainingIndices[i]].Input);
+                            realOutput = network.computeOutput(data[trainingIndices[i]].Input);
 
                         #endregion
                         #region -> Обратное распространение ошибки (backward pass, error propagation)
@@ -198,14 +198,15 @@ namespace ProjectGit
                     #endregion
                     #region -> Обновление весов (update weights and bias of neurons)
 
+                    int size = Math.Min(config_.BatchSize, data.Count - currentIndex);
                     for (int layerIndex = 0; layerIndex < network.Layers.Length; layerIndex++)
                     {
                         for (int neuronIndex = 0; neuronIndex < network.Layers[layerIndex].Neurons.Length; neuronIndex++)
                         {
-                            network.Layers[layerIndex].Neurons[neuronIndex].Bias -= NablaBiases[layerIndex][neuronIndex];
+                            network.Layers[layerIndex].Neurons[neuronIndex].Bias -= NablaBiases[layerIndex][neuronIndex] / size;
 
                             for (int weightIndex = 0; weightIndex < network.Layers[layerIndex].Neurons[neuronIndex].Weights.Length; weightIndex++)
-                                network.Layers[layerIndex].Neurons[neuronIndex].Weights[weightIndex] -= NablaWeights[layerIndex][neuronIndex][weightIndex];
+                                network.Layers[layerIndex].Neurons[neuronIndex].Weights[weightIndex] -= NablaWeights[layerIndex][neuronIndex][weightIndex] / size;
                         }
                     }
 
@@ -255,7 +256,7 @@ namespace ProjectGit
             LearningAlgorithmResult result = new LearningAlgorithmResult();
             result.Epoches = epochNumber;
             result.Error = currentError;
-            result.Duration = Convert.ToDouble((DateTime.Now - dtStart).Duration().Milliseconds / 1000);
+            result.Duration = Convert.ToDouble((DateTime.Now - dtStart).Duration().TotalMilliseconds / 1000.0);
 
             #endregion
             return result;

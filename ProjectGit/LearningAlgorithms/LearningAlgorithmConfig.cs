@@ -11,7 +11,7 @@ namespace ProjectGit
         public double LearningRate { get; set; }
 
         /// <summary>
-        /// Size of the butch. -1 means fullbutch size. 
+        /// Размер пакета обучения 
         /// </summary>
         public int BatchSize { get; set; }
 
