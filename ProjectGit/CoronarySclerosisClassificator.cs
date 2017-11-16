@@ -7,9 +7,19 @@ using System.Data;
 
 namespace ProjectGit
 {
+    public class CoronarySclerosisData
+    {
+        public CoronarySclerosisData(List<DataItem<double>> data)
+        {
+            Value = data;
+        }
+        public List<DataItem<double>> Value { get; }
+    }
     public class CoronarySclerosisClassificator
     {      
+        List<DataItem<double>> data_;
         List<DataItem<double>> train_data_;
+        List<DataItem<double>> test_data_;
 
         
         DataItem<DataParameter> data_config_ = new DataItem<DataParameter>(
@@ -41,16 +51,28 @@ namespace ProjectGit
         public DataParameter[] ResultConfig { get { return result_config_; } }
 
         /// <summary>
+        /// Общая выборка
+        /// </summary>
+        public CoronarySclerosisData Data { get { return new CoronarySclerosisData(data_); } }
+
+        /// <summary>
         /// Обучающая выборка
         /// </summary>
-        public List<DataItem<double>> TrainData { get { return train_data_; } }
+        public CoronarySclerosisData TrainData { get { return new CoronarySclerosisData(train_data_); } }
+
+        /// <summary>
+        /// Тестовая выборка
+        /// </summary>
+        public CoronarySclerosisData TestData { get { return new CoronarySclerosisData(test_data_); } }
 
 
 
 
         public CoronarySclerosisClassificator()
         {
-            train_data_ = readTrainSelection();
+            data_ = readTrainSelection();
+            train_data_ = new List<DataItem<double>>();
+            test_data_ = new List<DataItem<double>>();
         }
 
         public NeuralNetwork createNeuralNetwork(List<uint> neuronsOfHiddenLayers)
@@ -88,7 +110,7 @@ namespace ProjectGit
             return network;
         }
 
-        public DataTable createTableTrainSelection()
+        public DataTable createTableSelection()
         {
             DataTable table = new DataTable();
 
@@ -99,21 +121,45 @@ namespace ProjectGit
             foreach (DataParameter parameter in ResultConfig)
                 table.Columns.Add(new DataColumn(parameter.Name));
 
-            for (int i = 0; i < train_data_.Count; i++)
-            {
-                DataRow row = table.NewRow();
-
-                for (int j = 0; j < DataConfig.Input.Length; j++)
-                    row[DataConfig.Input[j].Name] = train_data_[i].Input[j];
-                for (int j = 0; j < DataConfig.Output.Length; j++)
-                    row[DataConfig.Output[j].Name] = train_data_[i].Output[j];
-
-                table.Rows.Add(row);
-            }
-
             return table;
         }
 
+        public bool divideData(double percentTrain)
+        {
+            train_data_.Clear();
+            test_data_.Clear();
+
+            List<int> listID = new List<int>();
+            for (int i = 0; i < data_.Count; ++i)
+                listID.Add(i);
+
+            Random random = new Random();
+
+            if(percentTrain < 0.0 && percentTrain > 1.0)
+            {
+                return false;
+            }
+
+            int countTrain = (int) Math.Round(data_.Count * percentTrain, 0);
+            while (train_data_.Count < countTrain)
+            {                 
+                    int index = random.Next(0, listID.Count);
+                    train_data_.Add(data_[listID[index]]);
+                    listID.RemoveAt(index);
+            }
+
+            int countTest = data_.Count - countTrain;
+            while (test_data_.Count < countTest)
+            {
+                int index = random.Next(0, listID.Count);
+                test_data_.Add(data_[listID[index]]);
+                listID.RemoveAt(index);
+            }
+
+            return true;
+
+
+        }
         List<DataItem<double>> readTrainSelection()
         {
             List<DataItem<double>> dataList = new List<DataItem<double>>();

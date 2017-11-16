@@ -39,19 +39,28 @@ namespace ProjectGit
         /// <returns>Возвращает LeaningAlgorithmResult </returns>
         public LearningAlgorithmResult train(IMultilayerNeuralNetwork network, IList<DataItem<double>> data)
         {
+            #region -> Инициализируем параметры алгоритма
+
             double currentError = Single.MaxValue;
             double lastError = 0;
             int epochNumber = 0;
             DateTime dtStart = DateTime.Now;
+            List<double> error_curve = new List<double>();
 
             if (config_.BatchSize < 1 ||
                 config_.BatchSize > data.Count
-            ){
+            )
+            {
                 config_.BatchSize = data.Count;
             }
 
+            #endregion
+
+            #region -> Работа алгоритма обучения
+
             do {
                 lastError = currentError;
+
                 #region -> Обработка пакетов
 
                 //index of dataitem
@@ -88,6 +97,7 @@ namespace ProjectGit
                     }
 
                     #endregion
+
                     #region -> Обработка одного пакета (process one batch)
 
                     for (int i = currentIndex; 
@@ -111,9 +121,13 @@ namespace ProjectGit
                             #region -> Вычисление ошибки выходного нейрона
 
                             network.Layers[_lastLayerIndex].Neurons[j].LastError =
-                                config_.ErrorFunction.calculatePartialDerivaitveByV2Index( data[i].Output, realOutput, j ) *
+                                config_.ErrorFunction.calculatePartialDerivaitveByV2Index( 
+                                    data[i].Output, 
+                                    realOutput, 
+                                    j 
+                                ) *
                                 network.Layers[_lastLayerIndex].Neurons[j].ActivationFunction.computeFirstDerivative(
-                                    network.Layers[_lastLayerIndex].Neurons[j].LastSum
+                                        network.Layers[_lastLayerIndex].Neurons[j].LastSum
                                 );
 
                             #endregion
@@ -196,6 +210,7 @@ namespace ProjectGit
                     }
 
                     #endregion
+
                     #region -> Обновление весов (update weights and bias of neurons)
 
                     int size = Math.Min(config_.BatchSize, data.Count - currentIndex);
@@ -211,10 +226,12 @@ namespace ProjectGit
                     }
 
                     #endregion
+
                     currentIndex += config_.BatchSize;
                 } while (currentIndex < data.Count);
 
                 #endregion
+
                 #region -> Вычисление ошибки на всей выборке (recalculating error on all data)
 
                 //real error
@@ -229,36 +246,46 @@ namespace ProjectGit
                 currentError *= 1d / data.Count;
 
                 #endregion
+
                 #region -> Регуляризация (regularization)
 
                 //regularization term
                 if (Math.Abs(config_.RegularizationFactor - 0d) > Double.Epsilon)
                 {
                     double reg = 0;
-                    for (int layerIndex = 0; layerIndex < network.Layers.Length; layerIndex++)                 
-                        for (int neuronIndex = 0; neuronIndex < network.Layers[layerIndex].Neurons.Length; neuronIndex++)                       
-                            for (int weightIndex = 0; weightIndex < network.Layers[layerIndex].Neurons[neuronIndex].Weights.Length; weightIndex++)                           
+                    for (int layerIndex = 0; layerIndex < network.Layers.Length; layerIndex++)
+                        for (int neuronIndex = 0; neuronIndex < network.Layers[layerIndex].Neurons.Length; neuronIndex++)
+                        {
+                            for (int weightIndex = 0; weightIndex < network.Layers[layerIndex].Neurons[neuronIndex].Weights.Length; weightIndex++)
                                 reg += network.Layers[layerIndex].Neurons[neuronIndex].Weights[weightIndex] *
                                         network.Layers[layerIndex].Neurons[neuronIndex].Weights[weightIndex];
+                        }
                                                                       
                     currentError += config_.RegularizationFactor * reg / (2 * data.Count);
                 }
 
                 #endregion
+
+                error_curve.Add(currentError);
                 epochNumber++;
             } while (
                 epochNumber < config_.MaxEpoches &&
                 currentError > config_.MinError &&
                 Math.Abs(currentError - lastError) > config_.MinErrorChange
             );
+
+            #endregion
+
             #region -> Инициализируем результат обучения
 
             LearningAlgorithmResult result = new LearningAlgorithmResult();
             result.Epoches = epochNumber;
             result.Error = currentError;
             result.Duration = Convert.ToDouble((DateTime.Now - dtStart).Duration().TotalMilliseconds / 1000.0);
+            result.ErrorCurve = error_curve;
 
             #endregion
+
             return result;
         }
 

@@ -28,8 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea5 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea6 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series6 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.dgv_layer_weights = new System.Windows.Forms.DataGridView();
             this.dgv_train_selection = new System.Windows.Forms.DataGridView();
             this.btn_train = new System.Windows.Forms.Button();
@@ -52,13 +54,15 @@
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.textBox1 = new System.Windows.Forms.TextBox();
-            this.tabPage_TrainSelection = new System.Windows.Forms.TabPage();
             this.tabPage_Structure_NN = new System.Windows.Forms.TabPage();
             this.btn_random = new System.Windows.Forms.Button();
             this.lb_name_layer = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.cb_layer_weights = new System.Windows.Forms.ComboBox();
+            this.tabPage_Selection = new System.Windows.Forms.TabPage();
             this.tabPage_Classification = new System.Windows.Forms.TabPage();
+            this.label16 = new System.Windows.Forms.Label();
+            this.tb_uac_config = new System.Windows.Forms.TextBox();
             this.cutoffpointt_config = new System.Windows.Forms.NumericUpDown();
             this.label14 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
@@ -71,6 +75,17 @@
             this.tb_accuracy = new System.Windows.Forms.TextBox();
             this.dgv_classific = new System.Windows.Forms.DataGridView();
             this.chart_classific = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.error_curve = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.dgv_test_selection = new System.Windows.Forms.DataGridView();
+            this.percentDivideData = new System.Windows.Forms.NumericUpDown();
+            this.label17 = new System.Windows.Forms.Label();
+            this.btn_divide_selection = new System.Windows.Forms.Button();
+            this.cb_selection = new System.Windows.Forms.ComboBox();
+            this.label18 = new System.Windows.Forms.Label();
+            this.btn_search_optimal_cutoffpoint = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_layer_weights)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_train_selection)).BeginInit();
             this.tab_train_selection.SuspendLayout();
@@ -80,12 +95,18 @@
             ((System.ComponentModel.ISupportInitialize)(this.error_config)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.learningRate_config)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.epohes_config)).BeginInit();
-            this.tabPage_TrainSelection.SuspendLayout();
             this.tabPage_Structure_NN.SuspendLayout();
+            this.tabPage_Selection.SuspendLayout();
             this.tabPage_Classification.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.cutoffpointt_config)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_classific)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chart_classific)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.error_curve)).BeginInit();
+            this.tabControl1.SuspendLayout();
+            this.tabPage1.SuspendLayout();
+            this.tabPage2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_test_selection)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.percentDivideData)).BeginInit();
             this.SuspendLayout();
             // 
             // dgv_layer_weights
@@ -106,10 +127,10 @@
             this.dgv_train_selection.AllowUserToDeleteRows = false;
             this.dgv_train_selection.BackgroundColor = System.Drawing.SystemColors.ButtonFace;
             this.dgv_train_selection.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgv_train_selection.Location = new System.Drawing.Point(0, 0);
+            this.dgv_train_selection.Location = new System.Drawing.Point(3, 6);
             this.dgv_train_selection.Name = "dgv_train_selection";
             this.dgv_train_selection.RowHeadersVisible = false;
-            this.dgv_train_selection.Size = new System.Drawing.Size(942, 522);
+            this.dgv_train_selection.Size = new System.Drawing.Size(707, 486);
             this.dgv_train_selection.TabIndex = 4;
             // 
             // btn_train
@@ -136,7 +157,7 @@
             // 
             this.tab_train_selection.Controls.Add(this.tabPage_Training);
             this.tab_train_selection.Controls.Add(this.tabPage_Structure_NN);
-            this.tab_train_selection.Controls.Add(this.tabPage_TrainSelection);
+            this.tab_train_selection.Controls.Add(this.tabPage_Selection);
             this.tab_train_selection.Controls.Add(this.tabPage_Classification);
             this.tab_train_selection.Location = new System.Drawing.Point(12, 12);
             this.tab_train_selection.Name = "tab_train_selection";
@@ -146,6 +167,7 @@
             // 
             // tabPage_Training
             // 
+            this.tabPage_Training.Controls.Add(this.error_curve);
             this.tabPage_Training.Controls.Add(this.label9);
             this.tabPage_Training.Controls.Add(this.regularization_config);
             this.tabPage_Training.Controls.Add(this.errorChange_config);
@@ -186,7 +208,7 @@
             this.regularization_config.DecimalPlaces = 6;
             this.regularization_config.Location = new System.Drawing.Point(178, 130);
             this.regularization_config.Maximum = new decimal(new int[] {
-            1,
+            10,
             0,
             0,
             0});
@@ -358,17 +380,6 @@
             this.textBox1.Size = new System.Drawing.Size(188, 20);
             this.textBox1.TabIndex = 9;
             // 
-            // tabPage_TrainSelection
-            // 
-            this.tabPage_TrainSelection.Controls.Add(this.dgv_train_selection);
-            this.tabPage_TrainSelection.Location = new System.Drawing.Point(4, 22);
-            this.tabPage_TrainSelection.Name = "tabPage_TrainSelection";
-            this.tabPage_TrainSelection.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage_TrainSelection.Size = new System.Drawing.Size(942, 522);
-            this.tabPage_TrainSelection.TabIndex = 0;
-            this.tabPage_TrainSelection.Text = "Обучающая выборка";
-            this.tabPage_TrainSelection.UseVisualStyleBackColor = true;
-            // 
             // tabPage_Structure_NN
             // 
             this.tabPage_Structure_NN.Controls.Add(this.btn_random);
@@ -419,8 +430,27 @@
             this.cb_layer_weights.TabIndex = 1;
             this.cb_layer_weights.SelectedIndexChanged += new System.EventHandler(this.cb_layer_weights_SelectedIndexChanged);
             // 
+            // tabPage_Selection
+            // 
+            this.tabPage_Selection.Controls.Add(this.btn_divide_selection);
+            this.tabPage_Selection.Controls.Add(this.label17);
+            this.tabPage_Selection.Controls.Add(this.percentDivideData);
+            this.tabPage_Selection.Controls.Add(this.tabControl1);
+            this.tabPage_Selection.Location = new System.Drawing.Point(4, 22);
+            this.tabPage_Selection.Name = "tabPage_Selection";
+            this.tabPage_Selection.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage_Selection.Size = new System.Drawing.Size(942, 522);
+            this.tabPage_Selection.TabIndex = 0;
+            this.tabPage_Selection.Text = "Данные";
+            this.tabPage_Selection.UseVisualStyleBackColor = true;
+            // 
             // tabPage_Classification
             // 
+            this.tabPage_Classification.Controls.Add(this.btn_search_optimal_cutoffpoint);
+            this.tabPage_Classification.Controls.Add(this.label18);
+            this.tabPage_Classification.Controls.Add(this.cb_selection);
+            this.tabPage_Classification.Controls.Add(this.label16);
+            this.tabPage_Classification.Controls.Add(this.tb_uac_config);
             this.tabPage_Classification.Controls.Add(this.cutoffpointt_config);
             this.tabPage_Classification.Controls.Add(this.label14);
             this.tabPage_Classification.Controls.Add(this.label13);
@@ -440,15 +470,31 @@
             this.tabPage_Classification.Text = "Классификация";
             this.tabPage_Classification.UseVisualStyleBackColor = true;
             // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(28, 369);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(29, 13);
+            this.label16.TabIndex = 24;
+            this.label16.Text = "UAC";
+            // 
+            // tb_uac_config
+            // 
+            this.tb_uac_config.Location = new System.Drawing.Point(119, 366);
+            this.tb_uac_config.Name = "tb_uac_config";
+            this.tb_uac_config.Size = new System.Drawing.Size(167, 20);
+            this.tb_uac_config.TabIndex = 23;
+            // 
             // cutoffpointt_config
             // 
-            this.cutoffpointt_config.DecimalPlaces = 5;
+            this.cutoffpointt_config.DecimalPlaces = 15;
             this.cutoffpointt_config.Increment = new decimal(new int[] {
             1,
             0,
             0,
             131072});
-            this.cutoffpointt_config.Location = new System.Drawing.Point(122, 18);
+            this.cutoffpointt_config.Location = new System.Drawing.Point(119, 54);
             this.cutoffpointt_config.Maximum = new decimal(new int[] {
             1,
             0,
@@ -457,12 +503,12 @@
             this.cutoffpointt_config.Name = "cutoffpointt_config";
             this.cutoffpointt_config.Size = new System.Drawing.Size(167, 20);
             this.cutoffpointt_config.TabIndex = 20;
-            this.cutoffpointt_config.ValueChanged += new System.EventHandler(this.numericUpDown1_ValueChanged);
+            this.cutoffpointt_config.ValueChanged += new System.EventHandler(this.cutoffpointt_config_ValueChanged);
             // 
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(22, 20);
+            this.label14.Location = new System.Drawing.Point(19, 56);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(64, 13);
             this.label14.TabIndex = 19;
@@ -471,7 +517,7 @@
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(22, 135);
+            this.label13.Location = new System.Drawing.Point(19, 171);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(55, 13);
             this.label13.TabIndex = 18;
@@ -479,7 +525,7 @@
             // 
             // tb_specificity
             // 
-            this.tb_specificity.Location = new System.Drawing.Point(122, 132);
+            this.tb_specificity.Location = new System.Drawing.Point(119, 168);
             this.tb_specificity.Name = "tb_specificity";
             this.tb_specificity.Size = new System.Drawing.Size(167, 20);
             this.tb_specificity.TabIndex = 17;
@@ -487,7 +533,7 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(22, 109);
+            this.label12.Location = new System.Drawing.Point(19, 145);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(37, 13);
             this.label12.TabIndex = 16;
@@ -495,7 +541,7 @@
             // 
             // tb_recall
             // 
-            this.tb_recall.Location = new System.Drawing.Point(122, 106);
+            this.tb_recall.Location = new System.Drawing.Point(119, 142);
             this.tb_recall.Name = "tb_recall";
             this.tb_recall.Size = new System.Drawing.Size(167, 20);
             this.tb_recall.TabIndex = 15;
@@ -503,7 +549,7 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(22, 83);
+            this.label11.Location = new System.Drawing.Point(19, 119);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(50, 13);
             this.label11.TabIndex = 14;
@@ -511,7 +557,7 @@
             // 
             // tb_precision
             // 
-            this.tb_precision.Location = new System.Drawing.Point(122, 80);
+            this.tb_precision.Location = new System.Drawing.Point(119, 116);
             this.tb_precision.Name = "tb_precision";
             this.tb_precision.Size = new System.Drawing.Size(167, 20);
             this.tb_precision.TabIndex = 13;
@@ -519,7 +565,7 @@
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(22, 57);
+            this.label10.Location = new System.Drawing.Point(19, 93);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(52, 13);
             this.label10.TabIndex = 12;
@@ -527,7 +573,7 @@
             // 
             // tb_accuracy
             // 
-            this.tb_accuracy.Location = new System.Drawing.Point(122, 54);
+            this.tb_accuracy.Location = new System.Drawing.Point(119, 90);
             this.tb_accuracy.Name = "tb_accuracy";
             this.tb_accuracy.Size = new System.Drawing.Size(167, 20);
             this.tb_accuracy.TabIndex = 11;
@@ -539,7 +585,7 @@
             this.dgv_classific.BackgroundColor = System.Drawing.SystemColors.ButtonFace;
             this.dgv_classific.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgv_classific.ColumnHeadersVisible = false;
-            this.dgv_classific.Location = new System.Drawing.Point(25, 174);
+            this.dgv_classific.Location = new System.Drawing.Point(22, 210);
             this.dgv_classific.Name = "dgv_classific";
             this.dgv_classific.RowHeadersVisible = false;
             this.dgv_classific.Size = new System.Drawing.Size(264, 136);
@@ -547,16 +593,138 @@
             // 
             // chart_classific
             // 
-            chartArea3.Name = "ChartArea1";
-            this.chart_classific.ChartAreas.Add(chartArea3);
-            this.chart_classific.Location = new System.Drawing.Point(390, 67);
+            chartArea5.Name = "ChartArea1";
+            this.chart_classific.ChartAreas.Add(chartArea5);
+            this.chart_classific.Location = new System.Drawing.Point(362, 106);
             this.chart_classific.Name = "chart_classific";
-            series3.ChartArea = "ChartArea1";
-            series3.Name = "Series1";
-            this.chart_classific.Series.Add(series3);
-            this.chart_classific.Size = new System.Drawing.Size(449, 380);
+            series5.ChartArea = "ChartArea1";
+            series5.Name = "Series1";
+            this.chart_classific.Series.Add(series5);
+            this.chart_classific.Size = new System.Drawing.Size(516, 389);
             this.chart_classific.TabIndex = 0;
             this.chart_classific.Text = "chart1";
+            // 
+            // error_curve
+            // 
+            chartArea6.Name = "ChartArea1";
+            this.error_curve.ChartAreas.Add(chartArea6);
+            this.error_curve.Location = new System.Drawing.Point(364, 130);
+            this.error_curve.Name = "error_curve";
+            series6.ChartArea = "ChartArea1";
+            series6.Name = "Series1";
+            this.error_curve.Series.Add(series6);
+            this.error_curve.Size = new System.Drawing.Size(539, 370);
+            this.error_curve.TabIndex = 25;
+            this.error_curve.Text = "chart1";
+            // 
+            // tabControl1
+            // 
+            this.tabControl1.Controls.Add(this.tabPage1);
+            this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Location = new System.Drawing.Point(0, 2);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.Size = new System.Drawing.Size(724, 524);
+            this.tabControl1.TabIndex = 5;
+            // 
+            // tabPage1
+            // 
+            this.tabPage1.Controls.Add(this.dgv_train_selection);
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(716, 498);
+            this.tabPage1.TabIndex = 0;
+            this.tabPage1.Text = "Обучающая выборка";
+            this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // tabPage2
+            // 
+            this.tabPage2.Controls.Add(this.dgv_test_selection);
+            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(716, 498);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "Тестовая выборка";
+            this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // dgv_test_selection
+            // 
+            this.dgv_test_selection.AllowUserToAddRows = false;
+            this.dgv_test_selection.AllowUserToDeleteRows = false;
+            this.dgv_test_selection.BackgroundColor = System.Drawing.SystemColors.ButtonFace;
+            this.dgv_test_selection.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgv_test_selection.Location = new System.Drawing.Point(3, 6);
+            this.dgv_test_selection.Name = "dgv_test_selection";
+            this.dgv_test_selection.RowHeadersVisible = false;
+            this.dgv_test_selection.Size = new System.Drawing.Size(707, 486);
+            this.dgv_test_selection.TabIndex = 5;
+            // 
+            // percentDivideData
+            // 
+            this.percentDivideData.DecimalPlaces = 2;
+            this.percentDivideData.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            131072});
+            this.percentDivideData.Location = new System.Drawing.Point(838, 45);
+            this.percentDivideData.Maximum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.percentDivideData.Name = "percentDivideData";
+            this.percentDivideData.Size = new System.Drawing.Size(98, 20);
+            this.percentDivideData.TabIndex = 6;
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(730, 47);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(102, 13);
+            this.label17.TabIndex = 7;
+            this.label17.Text = "Процент (train, test)";
+            // 
+            // btn_divide_selection
+            // 
+            this.btn_divide_selection.Location = new System.Drawing.Point(733, 82);
+            this.btn_divide_selection.Name = "btn_divide_selection";
+            this.btn_divide_selection.Size = new System.Drawing.Size(203, 23);
+            this.btn_divide_selection.TabIndex = 8;
+            this.btn_divide_selection.Text = "Разделить выборку";
+            this.btn_divide_selection.UseVisualStyleBackColor = true;
+            this.btn_divide_selection.Click += new System.EventHandler(this.btn_divide_selection_Click);
+            // 
+            // cb_selection
+            // 
+            this.cb_selection.FormattingEnabled = true;
+            this.cb_selection.Location = new System.Drawing.Point(119, 17);
+            this.cb_selection.Name = "cb_selection";
+            this.cb_selection.Size = new System.Drawing.Size(167, 21);
+            this.cb_selection.TabIndex = 25;
+            this.cb_selection.SelectedIndexChanged += new System.EventHandler(this.cb_selection_SelectedIndexChanged);
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(19, 20);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(52, 13);
+            this.label18.TabIndex = 26;
+            this.label18.Text = "Выборка";
+            // 
+            // btn_search_optimal_cutoffpoint
+            // 
+            this.btn_search_optimal_cutoffpoint.Location = new System.Drawing.Point(314, 50);
+            this.btn_search_optimal_cutoffpoint.Name = "btn_search_optimal_cutoffpoint";
+            this.btn_search_optimal_cutoffpoint.Size = new System.Drawing.Size(213, 25);
+            this.btn_search_optimal_cutoffpoint.TabIndex = 27;
+            this.btn_search_optimal_cutoffpoint.Text = "Найти оптимальную точку отсечения";
+            this.btn_search_optimal_cutoffpoint.UseVisualStyleBackColor = true;
+            this.btn_search_optimal_cutoffpoint.Click += new System.EventHandler(this.btn_search_optimal_cutoffpoint_Click);
             // 
             // Main
             // 
@@ -578,14 +746,21 @@
             ((System.ComponentModel.ISupportInitialize)(this.error_config)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.learningRate_config)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.epohes_config)).EndInit();
-            this.tabPage_TrainSelection.ResumeLayout(false);
             this.tabPage_Structure_NN.ResumeLayout(false);
             this.tabPage_Structure_NN.PerformLayout();
+            this.tabPage_Selection.ResumeLayout(false);
+            this.tabPage_Selection.PerformLayout();
             this.tabPage_Classification.ResumeLayout(false);
             this.tabPage_Classification.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.cutoffpointt_config)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_classific)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.chart_classific)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.error_curve)).EndInit();
+            this.tabControl1.ResumeLayout(false);
+            this.tabPage1.ResumeLayout(false);
+            this.tabPage2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_test_selection)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.percentDivideData)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -597,7 +772,7 @@
         private System.Windows.Forms.Button btn_train;
         private System.Windows.Forms.Button btn_init_weights;
         private System.Windows.Forms.TabControl tab_train_selection;
-        private System.Windows.Forms.TabPage tabPage_TrainSelection;
+        private System.Windows.Forms.TabPage tabPage_Selection;
         private System.Windows.Forms.TabPage tabPage_Training;
         private System.Windows.Forms.TabPage tabPage_Structure_NN;
         private System.Windows.Forms.Label label1;
@@ -633,6 +808,19 @@
         private System.Windows.Forms.TextBox tb_accuracy;
         private System.Windows.Forms.NumericUpDown cutoffpointt_config;
         private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.TextBox tb_uac_config;
+        private System.Windows.Forms.DataVisualization.Charting.Chart error_curve;
+        private System.Windows.Forms.Button btn_divide_selection;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.NumericUpDown percentDivideData;
+        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.DataGridView dgv_test_selection;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.ComboBox cb_selection;
+        private System.Windows.Forms.Button btn_search_optimal_cutoffpoint;
     }
 }
 

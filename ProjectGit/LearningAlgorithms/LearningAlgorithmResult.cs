@@ -11,5 +11,6 @@ namespace ProjectGit
         public int Epoches { get; set; }
         public double Duration { get; set; }
         public double Error { get; set; }
+        public List<double> ErrorCurve { get; set; }
     }
 }

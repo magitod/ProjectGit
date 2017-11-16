@@ -27,16 +27,25 @@ namespace ProjectGit
         public uint CalculatedClass { get { return calculated_class_; } }
 
         /// <summary>
-        /// Установить точку отсечения
+        /// Произвести вычисление класса по отчке отсечения
         /// </summary>
-        /// <param name="point"></param>
-        public void setCutOffPoint(double point)
+        /// <param name="cut_off_point">Точка отсечения</param>
+        /// <returns></returns>
+        public void makeCalculationClass(double cut_off_point)
         {
-            if (CalculatedValue > point)
-                calculated_class_ = 1;
-            else
-                calculated_class_ = 0;
+            calculated_class_ = calculateClass(cut_off_point);
+        }
 
+        /// <summary>
+        /// Вычислить класс
+        /// </summary>
+        /// <param name="cut_off_point">Точка отсечения</param>
+        /// <returns>Класс</returns>
+        public uint calculateClass(double cut_off_point)
+        {
+            uint trueClass = 0;
+            uint falseClass = 1;
+            return (CalculatedValue > cut_off_point) ? trueClass : falseClass;
         }
 
         /// <summary>

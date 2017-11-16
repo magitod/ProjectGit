@@ -8,6 +8,11 @@ namespace ProjectGit
 {
     internal class HalfSquaredEuclidianDistance : IMetrics<double>
     {
+        private double alpha_ = 0.5;
+        internal HalfSquaredEuclidianDistance()
+        {
+
+        }
         public double calculate(double[] v1, double[] v2)
         {
             double d = 0;
@@ -15,7 +20,7 @@ namespace ProjectGit
             {
                 d += (v1[i] - v2[i]) * (v1[i] - v2[i]);
             }
-            return 0.5 * d;
+            return alpha_ * d;
         }
 
         public double calculatePartialDerivaitveByV2Index(double[] v1, double[] v2, int v2Index)

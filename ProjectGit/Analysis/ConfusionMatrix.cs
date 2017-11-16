@@ -133,6 +133,18 @@ namespace ProjectGit
             }
         }
 
+        public void remove(ClassificationResult classification)
+        {
+            if (classification.CalculatedClass < size_ &&
+               classification.RealityClass < size_)
+            {
+                if (matrix_[classification.CalculatedClass, classification.RealityClass] > 0)
+                {
+                    matrix_[classification.CalculatedClass, classification.RealityClass]--;
+                }
+            }
+        }
+
         public void load(List<ClassificationResult> data)
         {
             clear();
